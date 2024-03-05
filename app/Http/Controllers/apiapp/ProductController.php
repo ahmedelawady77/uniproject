@@ -40,17 +40,6 @@ class ProductController extends Controller
         return $this->ApiResponse(null,'No Data',401);
     }
 
-    public function show2($name): JsonResponse{
-        $data = products::where("name",$name)->get('id')->toArray();
-        // $data = $data->toArray();
-        $id=$data[0]['id'];
-        if ($id){
-            dd($id);
-
-            return $this->ApiResponse($data,'Successed !');
-        }
-        return $this->ApiResponse(null,'Not found',404);
-    }
 
     public function show($id): JsonResponse{
         $data = products::find($id);
