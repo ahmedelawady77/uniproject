@@ -31,7 +31,10 @@ Route::group([
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('me', 'AuthController@me');
-    // Route::get('/products','ProductController@index');
-    // Route::get('/products/{id?}','ProductController@show');
+    Route::get('/products','ProductController@index');
+    Route::get('/products/{id?}','ProductController@show');
+    Route::get('/products/{id?}','ProductController@show2');
+    Route::get('/whishlist',"favController@getfavitem");
+    Route::post('/like',"favController@makefavitem");
 
 });
