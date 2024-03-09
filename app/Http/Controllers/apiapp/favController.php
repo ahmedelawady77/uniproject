@@ -33,11 +33,12 @@ class favController extends Controller
     {
         $userapp_id = auth()->guard('api')->user()->id;
         $fav_id = $this->fav_id($userapp_id);
-        $pro_id = $request->validate(['product_id'=>'required|numeric|unique:favorite_items,product_id'],[],['product_id'=>'product_id']);
-        $check = products::find($pro_id)->toArray();
-
-        if ($check) {
-            $input = ['favorite_id' => $fav_id, 'product_id' => (int) $pro_id["product_id"]];
+        $data = ($request->validate(['product_id'=>'required'],[],['product_id'=>'product_id']));
+        $pro_id = (int) ($data['product_id']);
+        $check = products::find($data)->toArray();
+        $check2 = $this->check($fav_id,$pro_id);
+        if ($check && $check2) {
+            $input = ['favorite_id' => $fav_id, 'product_id' => $pro_id];
 
             $result = Favorite_item::create($input);
             return $this->ApiResponse($result,"Successed !");
@@ -45,12 +46,27 @@ class favController extends Controller
         return $this->ApiResponse(null,"Not Found",404);
     }
 
+    public function delfavitem($id): JsonResponse{
+        $userapp_id = auth()->guard('api')->user()->id;
+        $fav_id = $this->fav_id($userapp_id);
+        $pro_id = (int) ($id);
+        $check = products::find($pro_id)->toArray();
+        $check2 = $this->check($fav_id,$pro_id);
+
+        if($check && !$check2){
+
+            $result = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$pro_id)->delete();
+            return $this->ApiResponse($result,'succeded');
+        }
+        return $this-> ApiResponse(null,'faild',401);
+    }
+
     public function getfavitem(): JsonResponse{
         $userapp_id = auth()->guard("api")->user()->id;
 
         $fav_id = $this->fav_id($userapp_id);
         // to get all things about fav_items and products
-            $result = Favorite_item::where('favorite_id',$fav_id)->with('products')->get();    
+            $result = Favorite_item::where('favorite_id',$fav_id)->with('products')->get(); 
         // to get all specifc columns about the 2 table [products,favorite_items]
             // $result = Favorite_item::where('favorite_id',$fav_id)->with('products:id,name,price,description')->get(['id','favorite_id','product_id']);
         if ($result){
@@ -70,7 +86,16 @@ class favController extends Controller
         }
         else{
             $data = Favorite::create(['userapp_id'=>$userapp_id]);
-            return $data['id'];
+            return (int) $data['id'];
         }
+    }
+
+    protected function check(int $fav_id, int $pro_id): bool{
+        $data = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$pro_id)->get()->toArray();
+
+        if($data){
+            return false;
+        }
+        return true;
     }
 }

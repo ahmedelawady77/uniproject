@@ -35,5 +35,6 @@ Route::group([
     Route::get('/products/{id?}','ProductController@show');
     Route::get('/whishlist',"favController@getfavitem");
     Route::post('/like',"favController@makefavitem");
+    Route::delete('/unlike/{id?}','favController@delfavitem');
 
 });
