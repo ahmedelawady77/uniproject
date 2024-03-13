@@ -36,5 +36,8 @@ Route::group([
     Route::get('/whishlist',"favController@getfavitem");
     Route::post('/like',"favController@makefavitem");
     Route::delete('/unlike/{id?}','favController@delfavitem');
+    Route::post('forgetpassword', 'ForgetPassword@forgetpassword');
+    Route::post('/validateotp','ForgetPassword@validateOtp');
+    Route::post('/resetpassword/{otp?}','ForgetPassword@resetpassword');
 
 });

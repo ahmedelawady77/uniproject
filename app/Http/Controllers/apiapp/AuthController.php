@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\apiapp;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\Api\RegisterRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Userapp;
 
 class AuthController extends Controller
 {
+
+
+
     /**
      * Create a new AuthController instance.
      *
