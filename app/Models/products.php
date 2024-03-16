@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\categories;
+use App\Models\ProductImage;
 use App\Models\maincategories;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,4 +34,5 @@ class products extends Model
     // {
     // return $this->hasOne(User::class,'namebrand');
     // }
+
 } 
