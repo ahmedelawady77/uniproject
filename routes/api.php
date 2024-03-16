@@ -33,11 +33,14 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::get('/products','ProductController@index');
     Route::get('/products/{id?}','ProductController@show');
-    Route::get('/whishlist',"favController@getfavitem");
+    Route::get('/favoriteitems',"favController@getfavitem");
     Route::post('/like',"favController@makefavitem");
     Route::delete('/unlike/{id?}','favController@delfavitem');
     Route::post('forgetpassword', 'ForgetPassword@forgetpassword');
     Route::post('/validateotp','ForgetPassword@validateOtp');
     Route::post('/resetpassword/{otp?}','ForgetPassword@resetpassword');
+    Route::get('/cartitems','CartController@GetCartitems');
+    Route::post('/additemtocart','CartController@Addtocart');
+    Route::delete('/deletefromcart/{id?}','CartController@Deletefromcart');
 
 });
