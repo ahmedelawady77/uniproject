@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'userapps',
+        ],
     ],
 
     /*
@@ -63,6 +67,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'userapps' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Userapp::class,
         ],
 
         // 'users' => [
@@ -93,6 +102,13 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        
+        'userapps' => [
+            'provider' => 'userapps',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
