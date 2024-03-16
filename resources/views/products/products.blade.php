@@ -76,6 +76,7 @@
 												<th class="border-bottom-0">القسم الرئيسي</th>	
                                                 <th class="border-bottom-0">الوصف</th>	
                                                 <th class="border-bottom-0">براند</th>
+                                                <th class="border-bottom-0">صوره المنتج</th>
                                                 <th class="border-bottom-0">العمليات</th>								
 											</tr>
 										</thead>
@@ -91,7 +92,21 @@
                                                 <td>{{$prod->maincategoryi->maincategory}}</td> 
 												<td>{{$prod->description}}</td>
                                                 <td>{{$prod->namebrand}}</td>
-												
+                                                <td>
+                                                <img src="{{Url::asset('Images/imgesproduct/')}}"
+                                                 height="50px" width="50px" alt="">                        
+                                                </td>
+                                                <td>
+                                                <div class="dropdown">
+                                                  <button aria-expanded="false" aria-haspopup="true" class="btn ripple btn-outline-primary btn-sm" data-toggle="dropdown" type="button">{{'العمليات'}}<i class="fas fa-caret-down mr-1"></i></button>
+                                                   <div class="dropdown-menu tx-8">
+                                                     <a class="dropdown-item" href="{{route('products.edit',$prod->id)}}"><i style="color: #0ba360" class="text-success ti-user"></i>&nbsp;&nbsp;تعديل البيانات</a>
+                                                   <a class="dropdown-item" href="#" data-toggle="modal" data-target="#update_status{{''}}"><i   class="text-warning ti-back-right"></i>&nbsp;&nbsp;تغير الحالة</a>
+                                                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete{{''}}"><i   class="text-danger  ti-trash"></i>&nbsp;&nbsp;حذف البيانات</a>
+                                                  </div>
+                                              </div>
+                                             </td>
+
 											</tr>		
 											@endforeach					
 										</tbody>
@@ -111,7 +126,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                    <form action="{{route('products.store')}}" method="post">
+                                    <form action="{{route('products.store')}}" method="post" enctype="multipart/form-data">
                                     {{csrf_field()}}
                                     <div class="modal-body">
                                         <div class="form-group">
@@ -130,7 +145,7 @@
                                         <select name="categories" id="categories" class="form-control" required>
                                             <option value="" selected disabled> --حدد القسم الفرعي--</option>
                                             @foreach ($categories as $catg)
-\                                                <option value="{{ $catg->id }}">{{ $catg->categoryname }}</option>
+                                               <option value="{{ $catg->id }}">{{ $catg->categoryname }}</option>
                                             @endforeach 
                                         </select>
 
@@ -147,7 +162,10 @@
                                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                                         </div>
                                        
-                                        
+                                        <p class="text-danger">* صيغة الصوره pdf, jpeg ,.jpg , png </p>
+                                        <h5 class="card-title">الصوره</h5>
+
+                                        <input type="file" name="pic" id="pic" accept="image/*" data-height="70" onchange="validateImageFile(this)" />
 
                                     </div>
                                     <div class="modal-footer">
