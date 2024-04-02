@@ -49,13 +49,13 @@ class favController extends Controller
     public function delfavitem($id): JsonResponse{
         $userapp_id = auth()->guard('api')->user()->id;
         $fav_id = $this->fav_id($userapp_id);
-        $pro_id = (int) ($id);
-        $check = products::find($pro_id)->toArray();
-        $check2 = $this->check($fav_id,$pro_id);
+        $id = (int) ($id);
+        $check = products::find($id)->toArray();
+        $check2 = $this->check($fav_id,$id);
 
         if($check && !$check2){
 
-            $result = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$pro_id)->delete();
+            $result = Favorite_item::where('favorite_id',$fav_id)->where('id',$id)->delete();
             return $this->ApiResponse($result,'succeded');
         }
         return $this-> ApiResponse(null,'faild',401);
