@@ -42,5 +42,6 @@ Route::group([
     Route::get('/cartitems','CartController@GetCartitems');
     Route::post('/additemtocart','CartController@Addtocart');
     Route::delete('/deletefromcart/{id?}','CartController@Deletefromcart');
+    Route::get('/search','SearchController@search');
 
 });
