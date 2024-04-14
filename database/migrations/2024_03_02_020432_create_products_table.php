@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->text('description');
-            // $table->string('image');
             $table->timestamps();
             // Foreign keys
             $table->foreignId('maincategory_id')->references('id')->on('maincategories')->onDelete('cascade');

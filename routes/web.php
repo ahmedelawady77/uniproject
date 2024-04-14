@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\categoriesController;
 use App\Http\Controllers\InvoiceAchiveController;
+use App\Http\Controllers\OrdersDetialsController;
 use App\Http\Controllers\maincategoriesController;
 use App\Http\Controllers\InvoicesDetailsController;
  
@@ -38,15 +40,9 @@ Route::get('/dashboard', function () {
 Route::resource('maincategories', maincategoriesController::class);
 Route::resource('categories', categoriesController::class);
 Route::resource('products', ProductsController::class);
-
-
-
-// Route::resource('invoices', InvoicesController::class);
-// Route::get('section/{id}' , [InvoicesController::class,'getproducts']);
-// Route::get('InvoicesDetails/{id}' , [InvoicesDetailsController::class,'edit']);
-// Route::get('view_file/{invoice_number}/{file_name}' , [InvoicesDetailsController::class,'open_file']);
-// Route::get('download/{invoice_number}/{file_name}' , [InvoicesDetailsController::class,'get_file']);
-// Route::get('delete_file' , [InvoicesDetailsController::class,'destroy'])->name('delete_file');
+Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
+Route::resource('orders', OrdersController::class);
+Route::resource('orderdetials', OrdersDetialsController::class);
 
 
 require __DIR__.'/auth.php';
