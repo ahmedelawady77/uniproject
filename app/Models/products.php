@@ -29,10 +29,11 @@ class products extends Model
     public function maincategoryi()
     {
     return $this->belongsto(maincategories::class,'maincategory_id');
+    } 
+    public function image()
+    {
+    return $this->hasOne(ProductImage::class, 'product_id', 'id'); 
     }
-    // public function namebrand()
-    // {
-    // return $this->hasOne(User::class,'namebrand');
-    // }
+
 
 } 

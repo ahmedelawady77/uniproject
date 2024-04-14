@@ -8,6 +8,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Models\maincategories;
 use App\Models\productsimeges;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,7 +22,8 @@ class ProductsController extends Controller
         $products = products::all();
         $categories = categories::all();
         $maincategories = maincategories::all();
-        return view('products.products',compact('products','categories','maincategories')); 
+        $photos = ProductImage::all();
+        return view('products.products',compact('products','categories','maincategories','photos')); 
     }
     /**
      * Show the form for creating a new resource.
@@ -73,15 +75,13 @@ class ProductsController extends Controller
             'product_name' => $request->name,
             'created_by' => auth()->user()->name, 
             'product_id' => $product_id,
-        ]);
-        
-   
+        ]);      
         
         session()->flash('Add', 'تم اضافة المنتج بنجاح ');
         // // // return view('products.products',compact('products','categories','maincategories')); 
            return redirect()->back();
 
-    }
+    }    
     /**
      * Display the specified resource.
      */
@@ -93,24 +93,49 @@ class ProductsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(products $products)
+    public function edit($id)
     {
-        //
+        $product = products::findorfail($id);;
+        $category = categories::all();
+        $maincategory = maincategories::all();
+        $photo = ProductImage::all();
+        return view('products.edit',compact('product','category','maincategory','photo')); 
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, products $products)
+    public function update(Request $request , $id)
     {
-        //
+        $products = products::findOrFail($request->id);
+        $products->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'maincategory_id' => $request->maincategory_id,    
+            'description' => $request->description,
+        ]);
+        session()->flash('edit', 'تم تعديل الفاتورة بنجاح');
+        return back();    
     }
-
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(products $products)
-    {
-        //
+    public function destroy(Request $request)
+    {       
+        $id = $request->id;
+        $products = products::where('id', $id)->first();
+        if($request->page_id==1)
+        {
+            if ($products->image && Storage::disk('upload_image')->exists($products->image->file_name))
+            {
+                Storage::disk('upload_image')->delete($products->image->file_name);
+            }
+            $products->delete();
+            //    products::destroy($request->id) on 1&2 lines
+            return redirect()->back();
+        }         
     }
+
 }
