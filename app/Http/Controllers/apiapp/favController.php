@@ -49,13 +49,13 @@ class favController extends Controller
     public function delfavitem($id): JsonResponse{
         $userapp_id = auth()->guard('api')->user()->id;
         $fav_id = $this->fav_id($userapp_id);
-        $pro_id = (int) ($id);
-        $check = products::find($pro_id)->toArray();
-        $check2 = $this->check($fav_id,$pro_id);
+        $id = (int) ($id);
+        $check = products::find($id)->toArray();
+        $check2 = $this->check($fav_id,$id);
 
         if($check && !$check2){
 
-            $result = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$pro_id)->delete();
+            $result = Favorite_item::where('favorite_id',$fav_id)->where('id',$id)->delete();
             return $this->ApiResponse($result,'succeded');
         }
         return $this-> ApiResponse(null,'faild',401);
@@ -66,11 +66,20 @@ class favController extends Controller
 
         $fav_id = $this->fav_id($userapp_id);
         // to get all things about fav_items and products
-            $result = Favorite_item::where('favorite_id',$fav_id)->with('products')->get(); 
+            $result = Favorite_item::where('favorite_id',$fav_id)->get(); 
         // to get all specifc columns about the 2 table [products,favorite_items]
             // $result = Favorite_item::where('favorite_id',$fav_id)->with('products:id,name,price,description')->get(['id','favorite_id','product_id']);
         if ($result){
-
+            $result = $result->map(function($item){
+                $newItem = [
+                    'id'=> $item->id,
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->products->name,
+                    'product_price' => $item->products->price,
+                    'product_image' => $item->products->image->file_name
+                ];
+                return $newItem;
+            });
             return $this->ApiResponse($result,"Successed");
         }
         else{

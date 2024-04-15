@@ -34,6 +34,9 @@ class products extends Model
     {
     return $this->hasOne(ProductImage::class, 'product_id', 'id'); 
     }
+    public function user(){
+      return $this->belongsTo(User::class,'namebrand');
+    }
 
 
 } 

@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('userapp_id')->references('id')->on('userapps')->onDelete('cascade');
-            $table->timestamp('date')->default(DB::raw('CURRENT_TIMESTAMP'));
+            // $table->timestamp('date')->default(date('Y-m-d H:i:s'));
+            $table->timestamps();
             $table->decimal('order_total', 10, 2);
             $table->enum('status',['pending','Deliverd','Canceled'])->default('pending');
         });
