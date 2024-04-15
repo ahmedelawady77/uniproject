@@ -33,6 +33,7 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::get('/products','ProductController@index');
     Route::get('/products/{id?}','ProductController@show');
+    Route::get('/products/categori/{categ?}','ProductController@categorie');
     Route::get('/favoriteitems',"favController@getfavitem");
     Route::post('/like',"favController@makefavitem");
     Route::delete('/unlike/{id?}','favController@delfavitem');
@@ -43,5 +44,6 @@ Route::group([
     Route::post('/additemtocart','CartController@Addtocart');
     Route::delete('/deletefromcart/{id?}','CartController@Deletefromcart');
     Route::get('/search','SearchController@search');
+    Route::post('/order','OrderController@makeorder');
 
 });

@@ -66,11 +66,20 @@ class favController extends Controller
 
         $fav_id = $this->fav_id($userapp_id);
         // to get all things about fav_items and products
-            $result = Favorite_item::where('favorite_id',$fav_id)->with('products')->get(); 
+            $result = Favorite_item::where('favorite_id',$fav_id)->get(); 
         // to get all specifc columns about the 2 table [products,favorite_items]
             // $result = Favorite_item::where('favorite_id',$fav_id)->with('products:id,name,price,description')->get(['id','favorite_id','product_id']);
         if ($result){
-
+            $result = $result->map(function($item){
+                $newItem = [
+                    'id'=> $item->id,
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->products->name,
+                    'product_price' => $item->products->price,
+                    'product_image' => $item->products->image->file_name
+                ];
+                return $newItem;
+            });
             return $this->ApiResponse($result,"Successed");
         }
         else{

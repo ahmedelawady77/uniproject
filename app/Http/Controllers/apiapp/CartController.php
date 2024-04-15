@@ -34,7 +34,18 @@ class CartController extends Controller
         $userapp_id = auth()->guard('api')->user()->id;
         $cart_id = $this->cartid($userapp_id);
         if ($cart_id){
-            $data = Cart_item::with('products')->get()->toArray();
+            $data = Cart_item::get();
+            $data = $data->map(function($item){
+                $newItem = [
+                    'id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'product_name' => $item->products->name,
+                    'product_price' => $item->products->price,
+                    'product_image' => $item->products->image->file_name
+                ];
+                return $newItem;
+            });
             
             if ($data){
 
