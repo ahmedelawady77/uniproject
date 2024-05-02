@@ -66,11 +66,11 @@ class favController extends Controller
 
         $fav_id = $this->fav_id($userapp_id);
         // to get all things about fav_items and products
-            $result = Favorite_item::where('favorite_id',$fav_id)->get(); 
+            $fav_items = Favorite_item::where('favorite_id',$fav_id)->get(); 
         // to get all specifc columns about the 2 table [products,favorite_items]
-            // $result = Favorite_item::where('favorite_id',$fav_id)->with('products:id,name,price,description')->get(['id','favorite_id','product_id']);
-        if ($result){
-            $result = $result->map(function($item){
+            // $fav_items = Favorite_item::where('favorite_id',$fav_id)->with('products:id,name,price,description')->get(['id','favorite_id','product_id']);
+        if ($fav_items){
+            $fav_items = $fav_items->map(function($item){
                 $newItem = [
                     'id'=> $item->id,
                     'product_id' => $item->product_id,
@@ -79,16 +79,12 @@ class favController extends Controller
                     'product_image' => $item->products->image->file_name
                 ];
                 return $newItem;
-            });
-            return $this->ApiResponse($result,"Successed");
-        }
-        else{
-            return $this->ApiResponse(null,'No Favorite Items');
-        }
+            }); return $this->ApiResponse($fav_items,"Successed");
+        }else{return $this->ApiResponse(null,'No Favorite Items');}
 
     }
 
-    protected function fav_id($userapp_id=null): int{
+    public static function fav_id($userapp_id=null): int{
         $data = Favorite::where("userapp_id",$userapp_id)->get("id")->toArray(); 
         if($data){
             return (int)($data[0]['id']);
@@ -96,6 +92,22 @@ class favController extends Controller
         else{
             $data = Favorite::create(['userapp_id'=>$userapp_id]);
             return (int) $data['id'];
+        }
+    }
+
+    public static function favorites(int $fav_id=null,int $pro_id=null): array|bool{
+        if ($pro_id === null)
+        {
+            return Favorite_item::where('favorite_id',$fav_id)->get('product_id')->pluck('product_id')->toArray();
+        }
+        else
+        {
+            $status = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$pro_id)->get('product_id')->pluck('product_id')->toArray();
+            if ($status)
+            {
+                return true;
+            }
+            return false;
         }
     }
 
