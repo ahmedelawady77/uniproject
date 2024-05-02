@@ -34,8 +34,8 @@ class CartController extends Controller
         $userapp_id = auth()->guard('api')->user()->id;
         $cart_id = $this->cartid($userapp_id);
         if ($cart_id){
-            $data = Cart_item::get();
-            $data = $data->map(function($item){
+            $items = Cart_item::get();
+            $items = $items->map(function($item){
                 $newItem = [
                     'id' => $item->id,
                     'product_id' => $item->product_id,
@@ -47,9 +47,9 @@ class CartController extends Controller
                 return $newItem;
             });
             
-            if ($data){
+            if ($items){
 
-                return $this->ApiResponse($data,'Succeced'); 
+                return $this->ApiResponse($items,'Succeced'); 
             }
             return $this->ApiResponse(null,'NO Items Here');
 

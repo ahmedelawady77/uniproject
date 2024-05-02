@@ -5,6 +5,7 @@ namespace App\Http\Controllers\apiapp;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\RegisterRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Userapp;
 
 class AuthController extends Controller
@@ -24,12 +25,13 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse{
         $data = $request->validated();
-
-        Userapp::create($data);
-        if (! $token= auth()->guard('api')->attempt(['email'=>$data['email'],'password'=>$data['password']])){
-            return $this->ApiResponse(['error'=>'Unauthorized'],'error',401);
+        $user = Userapp::create($data);
+        $credentials = ["email" => $request->email,'password'=>$request->password];
+        if ($user){
+            $token = auth()->guard('api')->attempt($credentials);
+            return $this->ApiResponse($this->respondWithToken($token));
         }
-        return $this->ApiResponse($this->respondWithToken($token),'Successfully registertion !');
+        return $this->ApiResponse();
     }
 
     /**
@@ -40,12 +42,12 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->guard('api')->attempt($credentials)) {
-            return $this->ApiResponse(null,'Unauthorized', 401);
+        $token = auth()->guard('api')->attempt($credentials);
+        if ($token) {
+            return $this->ApiResponse($this->respondWithToken($token));
         }
-
-        return $this->ApiResponse($this->respondWithToken($token),'Successfully !');
+        
+        return $this->ApiResponse(['Msg'=>'failled','errors' => 'Wrong in Credentials']);
     }
 
     /**
@@ -67,7 +69,7 @@ class AuthController extends Controller
     {
         auth()->guard('api')->logout();
 
-        return $this->ApiResponse( null,'Successfully logged out');
+        return $this->ApiResponse( ['Successfully logged out']);
     }
 
     /**
@@ -77,7 +79,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->ApiResponse($this->respondWithToken(auth()->guard('api')->refresh()),"Successed !");
+        return $this->ApiResponse($this->respondWithToken(auth()->guard('api')->refresh()));
     }
 
     /**
@@ -90,25 +92,35 @@ class AuthController extends Controller
     protected function respondWithToken($token): Array
     {
         return [
+            'id'=>auth()->guard('api')->user()->id,
             'Username'=> auth()->guard('api')->user()->name,
+            'email'=>auth()->guard('api')->user()->email,
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->guard('api')->factory()->getTTL() * 60
+            'Msg' => 'Success'
+            // 'token_type' => 'bearer',
+            // 'expires_in' => auth()->guard('api')->factory()->getTTL() /60/24/365 ." year"
         ];
     }
 
-    Protected function ApiResponse($data=null,$msg=null,$status=200): JsonResponse{
-        if ($data){
-            return response()->json([
-                "Data"=>$data,
-                "MSG"=>$msg,
-                "Status"=>$status
-            ],$status);
+    protected function attempt ($email,$password): bool | array| Userapp {
+        $user = Userapp::where('email',$email)->first();
+        if ($user && hash::check($password,$user->password)){
+            $data = [
+                'id' => $user->id,
+                'email' => $user->email,
+                'name' => $user->name,
+                'Msg' => 'Sucess'
+            ];
+
+            // dd($data);
+            return $data;
         }
-        
-        return response()->json([
-            "Msg"=>$msg,
-            'Status'=>$status
-        ],$status);
+        return false;
+    }
+
+    protected function apiwithresponse (){}
+
+    Protected function ApiResponse($data=null): JsonResponse{
+      return response()->json($data);
     }
 }
