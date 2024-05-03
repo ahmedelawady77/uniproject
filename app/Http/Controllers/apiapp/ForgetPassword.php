@@ -22,16 +22,17 @@ class ForgetPassword extends Controller
 
     public function forgetpassword(ForgetPasswordReqest $request){
         $email = $request->validated();
-        $userapp = Userapp::where('email',$email)->first();
+        $userapp = Userapp::where('email',$email['email'])->first();
 
         if (!$userapp){
             $this->ApiResponse(null,'Not Found',404);
         }
-        try {
-            $userapp->notify(new ResetPasswordVerficationNotifaction());
-        } catch (\Throwable $th) {
-            return $this->ApiResponse($th,'error');
-        }
+        // try {
+        //     $userapp->notify(new ResetPasswordVerficationNotifaction());
+        // } catch (\Throwable $th) {
+        //     return $this->ApiResponse($th,'error');
+        // }
+        $otp = $this->otp->generate($email['email'],"numeric");
         
         return $this->ApiResponse(null,'success');
     }
@@ -41,27 +42,25 @@ class ForgetPassword extends Controller
         return $this->check($data['email'],$data['Otp']);
     }
 
-    public function resetpassword(ResetPasswordRequest $request,string $otp){
+    public function resetpassword(ResetPasswordRequest $request){
         $data = $request->validated();
-        return $this->check($data['email'],$otp,$data['password']);
+        return $this->check($data['email'],null,$data['password']);
 
     }
 
-    protected function ApiResponse($data,$msg,$status=200): JsonResponse{
+    protected function ApiResponse($data,$msg): JsonResponse{
         if (!$data){
             
             return response()->json([
-              'Message' => $msg,
-              'Status' => $status  
-            ],$status);
+              'Msg' => $msg,  
+            ]);
 
         }
 
         return response()->json([
             'data' => $data,
-            'Message' => $msg,
-            'Status' => $status
-        ],$status);
+            'Msg' => $msg,
+        ]);
     }
 
     protected function check ($email,string $userapp_otp=null,$password=null){
@@ -74,22 +73,24 @@ class ForgetPassword extends Controller
         if ($userapp_otp && !$password){
             $check = $this->otp->validate($email,$userapp_otp);
             if ($check->status){
-                return $this->ApiResponse((new Otp)->generate($email,'numeric',6,1),'success');
+                return $this->ApiResponse(null,'success');
             }
-            return $this->ApiResponse(null,'Not Valid',422);
+            return $this->ApiResponse(null,'failled');
         }
 
-        if ($userapp_otp && $password){
-            $check = $this->otp->validate($email,(string)$userapp_otp);
+        if ($password){
+            $otp=$this->otp;
+            $status = $otp->testvalidate($email);
 
-            if ($check->status){
+            if ($status){
                 $user->update(['password' => Hash::make($password)]);
                 $user->tokens()->delete();
+                $otp->deletetoken($email);
                 return $this->ApiResponse(null,'success change password');
             }
-            return $this->ApiResponse(null,'Not Valid',422);
+            return $this->ApiResponse(null,'faillled');
 
         }
-        return $this->ApiResponse(null,'Successd send the otp');
+        return $this->ApiResponse(null,'Success');
     }
 }
