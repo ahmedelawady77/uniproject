@@ -38,12 +38,16 @@ Route::get('/dashboard', function () {
 // });
  
 Route::resource('maincategories', maincategoriesController::class);
+
 Route::resource('categories', categoriesController::class);
+
 Route::resource('products', ProductsController::class);
 Route::post('products/{id}', [ProductsController::class, 'update'])->name('products.update');
+
 Route::resource('orders', OrdersController::class);
 Route::resource('orderdetials', OrdersDetialsController::class);
-
+Route::post('update_status', [OrdersController::class, 'update_status'])->name('update_status');
+Route::get('ordershipped',  [OrdersController::class, 'show'])->name('ordershipped');
 
 require __DIR__.'/auth.php';
  

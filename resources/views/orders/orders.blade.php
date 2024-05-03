@@ -25,33 +25,7 @@
 				<!-- breadcrumb -->
 @endsection
 @section('content')
-    @if(session()->has('Add'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ session()->get('Add') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    @if (session()->has('Edit'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ session()->get('Edit') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    @if (session()->has('delete'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>{{ session()->get('delete') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-				<!-- row -->
+			<!-- row -->
 				<div class="row">
                 	<!--div-->
 					<div class="col-xl-12">
@@ -88,19 +62,23 @@
                                                 <td>{{$ord->date}}</td> 
                                                 <td>{{$ord->order_total}}</td> 
 												<td>
-                                                  <div class="dot-label bg-{{$ord->is_delivered == 1 ? 'success':'danger'}} ml-1"></div>
-                                                  {{$ord->is_delivered == 1 ? "تم" : "معلق" }}
-                                                </td>                                                <td>
+                                                  <div class="dot-label bg-{{$ord->status == 'pending' ? 'warning':'success'}} ml-1"></div>
+                                                  {{$ord->status == 'pending' ? "معلق" : "تم" }}
+                                                </td>                                                
+												<td>
                                                 <div class="dropdown">
                                                   <button aria-expanded="false" aria-haspopup="true" class="btn ripple btn-outline-primary btn-sm" data-toggle="dropdown" type="button">{{'العمليات'}}<i class="fas fa-caret-down mr-1"></i></button>
                                                    <div class="dropdown-menu tx-8">
-                                                     <a class="dropdown-item" href="{{route('orderdetials.store',$ord->id)}}"><i style="color: #0ba360" class="text-success ti-user"></i>&nbsp;&nbsp;تفاصيل الاوردر</a>
+                                                     <a class="dropdown-item" href="{{route('orderdetials.show',$ord->id)}}"><i style="color: #0ba360" class="text-success ti-user"></i>&nbsp;&nbsp;تفاصيل الاوردر</a>
                                                      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#delete{{$ord->id}}"><i   class="text-danger  ti-trash"></i>&nbsp;&nbsp;حذف الاوردر</a>
+													 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#update_status{{$ord->id}}"><i   class="text-warning ti-back-right"></i>&nbsp;&nbsp;تغير حاله الاوردر</a>
                                                   </div>
                                               </div>
                                              </td>
-											</tr>		
-											@endforeach					
+											</tr>	
+											@include('orders.update_status')	
+											@include('orders.delete')			
+											@endforeach		
 										</tbody>
 									</table>
 								</div>

@@ -116,7 +116,7 @@ class ProductsController extends Controller
             'maincategory_id' => $request->maincategory_id,    
             'description' => $request->description,
         ]);
-        session()->flash('edit', 'تم تعديل الفاتورة بنجاح');
+        session()->flash('edit', 'تم تعديل المنتج بنجاح');
         return back();    
     }
     /**

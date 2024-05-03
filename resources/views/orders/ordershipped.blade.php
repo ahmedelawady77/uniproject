@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('title')
-تفاصيل الاوردر
+الاوردارات المدفوعه
 @stop
 
 @section('css')
@@ -39,25 +39,21 @@
 									<table id="example1" class="table key-buttons text-md-nowrap">
 										<thead>
 											<tr>
-												<th class="border-bottom-0">#</th>
-												<th class="border-bottom-0">رقم تفاصيل الاوردر</th>
-												<th class="border-bottom-0">رقم المنتج</th>
-												<th class="border-bottom-0">الكميه</th>
-												<th class="border-bottom-0">السعر</th>	
+												<th class="border-bottom-0">رقم الاوردر</th>
                                                 <th class="border-bottom-0">مجموع الاوردر</th>	
+												<th class="border-bottom-0">حاله الاوردر</th>	
 											</tr>
 										</thead>
 										<tbody>
-											<?php $n = 0 ; ?>
-											@foreach($orderdetails as $orddls)
+											@foreach($ordersshipped as $ordship)
 											<tr>
-											<?php $n++ ; ?>
-												<td>{{$n}}</td>
-												<td>{{$orddls->order_id}}</td>
-												<td>{{$orddls->product_id}}</td>
-                                                <td>{{$orddls->product_qty}}</td>
-                                                <td>{{$orddls->product_price}}</td> 
-                                                <td>{{$orddls->subtotal}}</td> 									                                										
+												<td>{{$ordship->id}}</td>
+                                                <td>{{$ordship->order_total}}</td> 		
+												<td>
+                                                  <div class="dot-label bg-{{$ordship->status == 'Deliverd' ? 'success':'warning'}} ml-1"></div>
+                                                  {{$ordship->status == 'Deliverd' ? "تم" : "معلق"}}
+                                                </td>           	
+																			                                																	                                										
 											</tr>		
 											@endforeach					
 										</tbody>

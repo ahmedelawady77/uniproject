@@ -37,7 +37,8 @@ class OrdersController extends Controller
      */
     public function show(orders $orders)
     {
-        //
+    $ordersshipped = orders::wherestatus('Deliverd')->get();
+    return view('orders.ordershipped',compact('ordersshipped'));
     }
 
     /**
@@ -59,8 +60,24 @@ class OrdersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(orders $orders)
+    public function destroy(Request $request)
     {
-        //
+        $id = $request->id;
+        $order = orders::where('id', $id)->first();
+        $order->delete();
+        return redirect()->back();
+
     }
+
+    public function update_status(Request $request)
+    {
+        $orders = orders::findOrFail($request->id);
+        $orders->update([
+            'status' => $request->status,
+        ]);
+        session()->flash('edit', 'تم تعديل الحاله بنجاح');
+        return redirect()->back();
+        // dd($request->status);
+    }
+
 }

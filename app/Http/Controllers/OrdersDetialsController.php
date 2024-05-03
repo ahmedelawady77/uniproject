@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\orders_details;
+use App\Models\orders;
 use Illuminate\Http\Request;
+use App\Models\orders_details;
 
 class OrdersDetialsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $orderdetails = orders_details::all();
-        return view('orders.orderdetials',compact('orderdetails'));
+    //    $arr = $request->keys() ;
+    //     dd( $arr[0] );
     }
 
     /**
@@ -29,15 +30,16 @@ class OrdersDetialsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(orders $orders)
+    public function show(Request $request , $id)
     {
-        //
+        $orderdetails = orders_details::where('order_id',$id)->get();
+        return view('orders.orderdetials',compact('orderdetails'));
     }
 
     /**

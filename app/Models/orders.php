@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class orders extends Model
 {
     use HasFactory;
+    public $timestamps = false; 
     protected $fillable =
     [
     'userapp_id' ,
     'date' ,
     'order_total' ,
-    'is_delivered' ,
+    'status' ,
     ];
 
  public function userappid()
