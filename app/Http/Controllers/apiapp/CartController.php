@@ -32,9 +32,9 @@ class CartController extends Controller
 
     public function GetCartitems(){
         $userapp_id = auth()->guard('api')->user()->id;
-        $cart_id = $this->cartid($userapp_id);
+        $cart_id = ($this->cartid($userapp_id));
         if ($cart_id){
-            $items = Cart_item::get();
+            $items = Cart_item::where('cart_id',$cart_id)->get();
             $items = $items->map(function($item){
                 $newItem = [
                     'id' => $item->id,
@@ -60,7 +60,12 @@ class CartController extends Controller
     public function Deletefromcart($id){
         $userapp_id = auth()->guard('api')->user()->id;
         $cartid = $this->cartid($userapp_id);
-        $data = Cart_item::find($id)->delete();
+        
+        if($item = Cart_item::find((int)$id)){
+            $item->delete();
+            return $this->ApiResponse(null,'success');
+        }
+        return $this->ApiResponse(null,"failled");
     }
 
     protected function ApiResponse($data = null, $msg = null, $status = 200): JsonResponse

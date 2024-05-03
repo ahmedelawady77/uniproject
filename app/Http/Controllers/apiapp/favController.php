@@ -55,8 +55,8 @@ class favController extends Controller
 
         if($check && !$check2){
 
-            $result = Favorite_item::where('favorite_id',$fav_id)->where('id',$id)->delete();
-            return $this->ApiResponse($result,'succeded');
+            $result = Favorite_item::where('favorite_id',$fav_id)->where('product_id',$id)->delete();
+            return $this->ApiResponse(null,'succeded');
         }
         return $this-> ApiResponse(null,'faild',401);
     }
