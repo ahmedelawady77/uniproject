@@ -39,8 +39,8 @@ class products extends Model
     }
 
     public static function getProducts($favorites){
-      return self::inRandomOrder()
-      ->select([
+      return self::inRandomOrder()->
+      select([
           'products.id',
           'products.name as product_name',
           'products.price as product_price',
@@ -52,7 +52,7 @@ class products extends Model
           'products.namebrand',
           'users.namebrand as Name Of Brand',
           'product_images.file_name as product_image',
-          \DB::raw('IF(products.id IN (' . implode(',', $favorites) . '), 1, 0) as is_favorite')
+          \DB::raw('IF(products.id IN (' . (empty($favorites) ? '0' : implode(',', $favorites)) . '), 1, 0) as is_favorite')
       ])
       ->leftJoin('maincategories', 'maincategory_id', '=', 'maincategories.id')
       ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
@@ -64,7 +64,8 @@ class products extends Model
     }
 
     public static function getProduct($pro_id,$favorites){
-      return self::find($pro_id)
+      try {
+        return self::find($pro_id)
                   ->select([
                       'products.id',
                       'products.name as product_name',
@@ -77,7 +78,7 @@ class products extends Model
                       'products.namebrand',
                       'users.namebrand as Name Of Brand',
                       'product_images.file_name as product_image',
-                      // \DB::raw('IF(products.id IN (' . implode(',', $favorites) . '), 1, 0) as is_favorite')
+                      // \DB::raw('IF(products.id IN (' . (empty($favorites) ? '0' : implode(',', $favorites)) . '), 1, 0) as is_favorite')
                   ])
                   ->leftJoin('maincategories', 'maincategory_id', '=', 'maincategories.id')
                   ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
@@ -87,7 +88,11 @@ class products extends Model
                   ->get()->map(function ($item) use($favorites){
                     $item->is_favorite = $favorites;
                     return $item;}
-                  );
+                  )->find($pro_id);
+      } catch (\Throwable $th) {
+        return "No data";
+      }
+      
 
     }
     public static function getCateProducts($cate_id,$favorites){
@@ -104,7 +109,7 @@ class products extends Model
                       'products.namebrand',
                       'users.namebrand as Name Of Brand',
                       'product_images.file_name as product_image',
-                      \DB::raw('IF(products.id IN (' . implode(',', $favorites) . '), 1, 0) as is_favorite')
+                      \DB::raw('IF(products.id IN (' . (empty($favorites) ? '0' : implode(',', $favorites)) . '), 1, 0) as is_favorite')
                   ])
                   ->leftJoin('maincategories', 'maincategory_id', '=', 'maincategories.id')
                   ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
