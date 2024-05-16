@@ -37,6 +37,8 @@ class ProductController extends Controller
         $userapp_id = auth()->id();
         $fav_id = favController::fav_id($userapp_id);
         $favorites = favController::favorites($fav_id);
+
+        // dd($favorites);
         $products = products::getProducts($favorites);
 
         // $products = $products->map(function ($product) use ($favorites){
@@ -70,17 +72,6 @@ class ProductController extends Controller
         $product = products::getProduct($id,$favorites);
         
         if ($product){
-                // $newitem = [
-                //     'id' => $product->id,
-                //     'product_name' => $product->name,
-                //     'product_price' => $product->price,
-                //     'descerption' => $product->description,
-                //     'maincategory' => $product->maincategoryi->maincategory,
-                //     'category' => $product->category->categoryname,
-                //     'namebrand' => $product->user->namebrand,
-                //     'Product_image' => $product->image->file_name,
-                //     'is_favorite' => $favorites
-                // ];
             return $this->ApiResponse($product,'Successed !');
         }
         return $this->ApiResponse(null,'Not found',404);

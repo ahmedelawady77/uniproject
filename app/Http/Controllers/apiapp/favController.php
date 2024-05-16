@@ -98,7 +98,10 @@ class favController extends Controller
     public static function favorites(int $fav_id=null,int $pro_id=null): array|bool{
         if ($pro_id === null)
         {
-            return Favorite_item::where('favorite_id',$fav_id)->get('product_id')->pluck('product_id')->toArray();
+            $fav_item = Favorite_item::where('favorite_id',$fav_id)->get('product_id')->pluck('product_id')->toArray();
+            
+                return $fav_item;
+            
         }
         else
         {
