@@ -63,6 +63,8 @@ class products extends Model
 
     }
 
+    
+
     public static function getProduct($pro_id,$favorites){
       try {
         return self::find($pro_id)
