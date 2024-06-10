@@ -4,6 +4,7 @@ namespace App\Http\Controllers\apiapp;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\OrderRequest;
+use App\Models\Cart_item;
 use App\Models\orders as Order;
 use App\Models\orders_details as Order_item;
 use Illuminate\Http\JsonResponse;
@@ -22,26 +23,37 @@ class OrderController extends Controller
         return $this->ApiResponse($order,'Success !');
     }
 
-    public function makeorder(OrderRequest $request): JsonResponse{
-        $data = [
-            'userapp_id' => auth()->guard('api')->user()->id,
-            'order_total' => $request->input('order_total'),
-        ];
-
-        $order = Order::create($data);
-
-        foreach($request->order_items as $order_item){
-            $items = [
-                'order_id' => $order->id,
-                'product_id' => $order_item['product_id'],
-                'product_price' => $order_item['price'],
-                'product_qty' => $order_item['amount'],
-                'subtotal' => $order_item['subtotal']
+    public function makeorder(): JsonResponse{
+        $user_app_id = auth()->guard('api')->user()->id;
+        $cartitems = CartController::GetCartitems1($user_app_id);
+        if(!$cartitems->isEmpty()){
+            $totalorder = 0;
+            foreach($cartitems as $item){
+                $totalorder+= $item['product_price'] * $item['quantity'];
+            }
+            $data = [
+                'userapp_id' => auth()->guard('api')->user()->id,
+                'order_total' => $totalorder,
             ];
-            Order_item::create($items);
-        }
 
-        return $this->ApiResponse(null,'Order Added :)');
+            $order = Order::create($data);
+
+            foreach($cartitems as $item){
+                $items = [
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'product_price' => $item['product_price'],
+                    'product_qty' => $item['quantity'],
+                    'subtotal' => $item['product_price'] * $item['quantity']
+                ];
+                Order_item::create($items);
+                CartController::removefromcart($item['product_id'],$user_app_id);
+            }
+
+            return $this->ApiResponse(null,'Order Added :)');
+        }
+        return $this->ApiResponse(null,'No Items In Cart');
+        
     }
 
     protected function ApiResponse($data = null, $Msg = null, $status = 200): JsonResponse{

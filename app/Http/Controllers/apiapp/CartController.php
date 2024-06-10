@@ -42,7 +42,7 @@ class CartController extends Controller
                     'quantity' => $item->quantity,
                     'product_name' => $item->products->name,
                     'product_price' => $item->products->price,
-                    'product_image' => $item->products->image->file_name
+                    'product_image' => $item->products->image? $item->products->image->file_name : 'No Image'
                 ];
                 return $newItem;
             });
@@ -57,15 +57,20 @@ class CartController extends Controller
         return $this->ApiResponse(null,'Not Found',404);
     }
 
-    public function Deletefromcart($id){
+    public function Deletefromcart($Proid){
         $userapp_id = auth()->guard('api')->user()->id;
         $cartid = $this->cartid($userapp_id);
-        
-        if($item = Cart_item::find((int)$id)){
-            $item->delete();
+
+        if(!($this->check($cartid,$Proid))){
+            Cart_item::where('cart_id',$cartid)->where('product_id',$Proid)->delete();
             return $this->ApiResponse(null,'success');
         }
         return $this->ApiResponse(null,"failled");
+    }
+
+    public static function removefromcart($Proid,$user_app_id){
+        $cartid = self::cartid($user_app_id);
+        Cart_item::where('cart_id',$cartid)->where('product_id',$Proid)->delete();
     }
 
     protected function ApiResponse($data = null, $msg = null, $status = 200): JsonResponse
@@ -81,7 +86,7 @@ class CartController extends Controller
         return response()->json(['Message' => $msg, "status" => $status]);
     }
 
-    protected function cartid($userapp_id): int{
+    protected static function cartid($userapp_id): int{
         $check = Cart::where('userapp_id',$userapp_id)->first();
         
         if ($check){
@@ -100,4 +105,23 @@ class CartController extends Controller
         }
         return false;
     }
+
+    public static function GetCartitems1($user_app_id){
+        $cart_id = self::cartid($user_app_id);
+        $items = Cart_item::where('cart_id',$cart_id)->get();
+            $items = $items->map(function($item){
+                $newItem = [
+                    'id' => $item->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'product_name' => $item->products->name,
+                    'product_price' => $item->products->price,
+                    'product_image' => $item->products->image? $item->products->image->file_name : 'No Image'
+                ];
+                return $newItem;
+            });
+
+            return $items;
+
+    } 
 }

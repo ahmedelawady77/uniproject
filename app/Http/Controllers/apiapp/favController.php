@@ -46,10 +46,10 @@ class favController extends Controller
         return $this->ApiResponse(null,"Not Found",404);
     }
 
-    public function delfavitem($id): JsonResponse{
+    public function delfavitem($Proid): JsonResponse{
         $userapp_id = auth()->guard('api')->user()->id;
         $fav_id = $this->fav_id($userapp_id);
-        $id = (int) ($id);
+        $id = (int) ($Proid);
         $check = products::find($id)->toArray();
         $check2 = $this->check($fav_id,$id);
 
@@ -76,7 +76,7 @@ class favController extends Controller
                     'product_id' => $item->product_id,
                     'product_name' => $item->products->name,
                     'product_price' => $item->products->price,
-                    'product_image' => $item->products->image->file_name
+                    'product_image' => $item->products->image? $item->products->image->file_name:"No Image"
                 ];
                 return $newItem;
             }); return $this->ApiResponse($fav_items,"Successed");

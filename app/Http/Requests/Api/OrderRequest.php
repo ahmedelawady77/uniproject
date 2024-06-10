@@ -21,9 +21,6 @@ class OrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'order_total',
-            'order_items',
-        ];
+        return [];
     }
 }
